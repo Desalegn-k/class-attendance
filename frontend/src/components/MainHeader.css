@@ -1,0 +1,68 @@
+/* frontend/src/components/MainHeader.css
+   Page-specific rules for the app header and mobile sidebar.
+   Shared tokens, buttons and colours live in src/index.css. */
+
+/* ---- Brand ---- */
+
+.app-brand__text small {
+  display: none;
+}
+
+/* ---- Sidebar icons ---- */
+
+.ico {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: 0 0 auto;
+}
+
+.sidebar__link .icon {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  flex: 0 0 auto;
+}
+/* .app-header{
+  background-color: rgb(19, 1, 1) !important;
+  
+} */
+
+.sidebar__link .icon .ico {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+.app-header__inner{
+ 
+  /* for this header align evry thing in the center */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+
+
+}
+
+.app-header__left-section{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background-color:red;
+  width: 100%;
+}
+.app-header__right-section{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background-color:black;
+  width: 100%;
+}
+
+/* ---- Desktop ---- */
+
+@media (min-width: 1024px) {
+  .app-brand__text small {
+    display: block;
+  }
+}

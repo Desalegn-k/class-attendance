@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   // "ADMIN" | "TEACHER" | "STUDENT"
+  createdAt    DateTime @default(now())
+  isActive          Boolean @default(true)   // ← add
+  mustChangePassword Boolean @default(false) // ← add
+
+  classesTaught     Class[]            @relation("TeacherClasses")
+  enrollments       Enrollment[]
+  attendanceRecords AttendanceRecord[]
+}
+
+model Class {
+  id        String   @id @default(cuid())
+  name      String
+  subject   String?
+  teacherId String
+  teacher   User     @relation("TeacherClasses", fields: [teacherId], references: [id])
+  createdAt DateTime @default(now())
+
+  enrollments Enrollment[]
+  sessions    Session[]
+}
+
+model Enrollment {
+  id        String @id @default(cuid())
+  classId   String
+  studentId String
+  class     Class  @relation(fields: [classId], references: [id])
+  student   User   @relation(fields: [studentId], references: [id])
+
+  @@unique([classId, studentId])
+}
+
+model Session {
+  id             String   @id @default(cuid())
+  classId        String
+  class          Class    @relation(fields: [classId], references: [id])
+  code           String   @unique // short human-enterable code, e.g. "7K4P2Q"
+  qrToken        String   @unique // long random token embedded in the QR payload
+  opensAt        DateTime @default(now())
+  closesAt       DateTime?
+  gracePeriodSec Int      @default(300) // after this many seconds from opensAt, check-ins are marked LATE
+  status         String   @default("OPEN") // "OPEN" | "CLOSED"
+  latitude       Float?
+  longitude      Float?
+  radiusMeters   Int?
+  createdAt      DateTime @default(now())
+  lastSeenAt     DateTime @default(now())
+
+  attendanceRecords AttendanceRecord[]
+}
+
+model AttendanceRecord {
+  id          String    @id @default(cuid())
+  sessionId   String
+  session     Session   @relation(fields: [sessionId], references: [id])
+  studentId   String
+  student     User      @relation(fields: [studentId], references: [id])
+  status      String    // "PRESENT" | "LATE" | "ABSENT" | "EXCUSED"
+  checkedInAt DateTime?
+  note        String?
+
+  @@unique([sessionId, studentId])
+}

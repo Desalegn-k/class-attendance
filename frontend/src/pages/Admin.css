@@ -1,0 +1,358 @@
+.admin-dashboard {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: var(--space-5) var(--gutter);
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@media (min-width: 768px) {
+  .admin-dashboard {
+    padding-block: var(--space-6);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.admin-tabs button {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #475569;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.admin-tabs button.active {
+  background: linear-gradient(90deg, #2563eb, #4f46e5);
+  color: #fff;
+  border-color: transparent;
+}
+
+.admin-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #fff;
+  border: 1px solid #eef0f3;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.admin-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  background: #f8fafc;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  border-bottom: 1px solid #eef0f3;
+  white-space: nowrap;
+}
+
+.admin-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.9rem;
+  vertical-align: middle;
+  overflow-wrap: break-word;
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.admin-table select {
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+}
+
+.admin-table button.danger {
+  background: #fee2e2;
+  color: #dc2626;
+  border: none;
+  padding: 0.35rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.admin-table button.danger:hover {
+  background: #fecaca;
+}
+.admin-sessions-controls {
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.admin-sessions-controls label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0 0.25rem;
+  cursor: pointer;
+}
+
+.admin-sessions-controls input[type="checkbox"] {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: #2563eb;
+  flex: 0 0 auto;
+}
+
+.status-open {
+  color: #16a34a;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.status-closed {
+  color: #94a3b8;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.admin-empty {
+  text-align: center;
+  color: #94a3b8;
+  font-style: italic;
+  padding: 1.5rem;
+}
+.admin-table button.success {
+  background: #dcfce7;
+  color: #16a34a;
+  border: none;
+  padding: 0.35rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.admin-table button.success:hover {
+  background: #bbf7d0;
+}
+.admin-create-panel {
+  background: #fff;
+  border: 1px solid #eef0f3;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.admin-section-title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.admin-section-subtitle {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.admin-subtabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.admin-subtabs button {
+  padding: 0.35rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.admin-subtabs button.active {
+  background: #2563eb;
+  color: #fff;
+  border-color: transparent;
+}
+
+.admin-create-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.admin-create-form input,
+.admin-create-form select {
+  flex: 1;
+  min-width: 140px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.9rem;
+}
+
+.admin-create-form button {
+  background: linear-gradient(90deg, #2563eb, #4f46e5);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+}
+
+.admin-form-error {
+  color: #dc2626;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.admin-form-success {
+  color: #16a34a;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.admin-import-hint {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 0.6rem;
+}
+
+.admin-preview-table {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.admin-import-submit {
+  background: linear-gradient(90deg, #2563eb, #4f46e5);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+}
+
+@media (max-width: 640px) {
+  .admin-create-form input,
+  .admin-create-form select {
+    min-width: 100%;
+  }
+}
+
+
+/* ====================== RESPONSIVE ============================== */
+
+/* The table always keeps its rows and columns. Below each breakpoint the
+   cells get tighter padding and smaller type so every column stays on one
+   line instead of the page scrolling sideways. */
+@media (max-width: 1023px) {
+  .admin-table th {
+    padding: 0.5rem 0.5rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.02em;
+  }
+
+  .admin-table td {
+    padding: 0.5rem;
+    font-size: 0.78rem;
+  }
+
+  .admin-table select {
+    padding: 0.2rem 0.3rem;
+    font-size: 0.75rem;
+    max-width: 7rem;
+  }
+
+  .admin-table button.danger {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-table-wrap {
+    border-radius: 10px;
+  }
+
+  .admin-table {
+    table-layout: auto;
+  }
+
+  .admin-table th {
+    padding: 0.4rem 0.3rem;
+    font-size: 0.6rem;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .admin-table td {
+    padding: 0.4rem 0.3rem;
+    font-size: 0.68rem;
+    line-height: 1.35;
+  }
+
+  .admin-table td:first-child {
+    font-weight: 600;
+  }
+
+  .admin-table select {
+    width: 100%;
+    max-width: 5.5rem;
+    min-height: 32px;
+    font-size: 0.65rem;
+  }
+
+  .admin-table button.danger {
+    min-height: 32px;
+    padding: 0.25rem 0.4rem;
+    font-size: 0.65rem;
+  }
+
+  .status-open,
+  .status-closed {
+    font-size: 0.62rem;
+  }
+
+  .admin-empty {
+    padding: 1rem 0.5rem;
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .admin-table th {
+    padding: 0.35rem 0.2rem;
+    font-size: 0.55rem;
+  }
+
+  .admin-table td {
+    padding: 0.35rem 0.2rem;
+    font-size: 0.62rem;
+  }
+
+  .admin-table select {
+    max-width: 4.5rem;
+    font-size: 0.6rem;
+  }
+}

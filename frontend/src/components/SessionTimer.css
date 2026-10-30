@@ -1,0 +1,62 @@
+.session-timer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #eef0f3;
+  border-radius: 12px;
+  padding: 0.9rem 1.2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.25rem;
+}
+
+.timer-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 90px;
+}
+
+.timer-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+}
+.timer-open {
+  color: #16a34a;
+}
+
+.timer-fixed {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.timer-live {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.timer-warning {
+  color: #d97706;
+}
+
+.timer-closed {
+  color: #94a3b8;
+}
+
+@media (max-width: 480px) {
+  .session-timer {
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .timer-fixed,
+  .timer-live {
+    font-size: 1rem;
+  }
+}

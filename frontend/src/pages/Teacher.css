@@ -1,0 +1,165 @@
+.teacher-dashboard button {
+  background-color: #f1f5f9;
+  color: #475569;
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  font-weight: 500;
+  border: 1px solid #e2e8f0;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.teacher-dashboard button:hover {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border-color: #fecaca;
+  transform: translateY(-1px);
+}
+
+.teacher-dashboard button:active {
+  transform: translateY(0);
+}
+/* Teacher.css */
+
+.teacher-dashboard {
+  animation: fadeIn 0.4s ease-in-out;
+  min-height: 100vh;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Header ---- */
+.teacher-dashboard h1 {
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: -0.02em;
+  font-size: 1.6rem;
+}
+
+/* Logout button */
+.teacher-dashboard .flex.justify-between button {
+  background-color: #f1f5f9;
+  color: #475569;
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  font-weight: 500;
+  border: 1px solid #e2e8f0;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  white-space: nowrap;
+}
+
+.teacher-dashboard .flex.justify-between button:hover {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border-color: #fecaca;
+  transform: translateY(-1px);
+}
+
+/* ---- Create class form ---- */
+.teacher-dashboard form {
+  background: #ffffff;
+  padding: 1rem;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border: 1px solid #eef0f3;
+}
+
+.teacher-dashboard form input {
+  border: 1px solid #e2e8f0;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: #f8fafc;
+}
+
+.teacher-dashboard form input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  background: #ffffff;
+}
+
+.teacher-dashboard form button {
+  background: linear-gradient(90deg, #2563eb, #4f46e5);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+  color: #ffffff;
+}
+
+.teacher-dashboard form button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+}
+
+.teacher-dashboard form button:active {
+  transform: translateY(0);
+}
+
+/* ---- Class list cards ---- */
+.teacher-dashboard a.block {
+  background: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.teacher-dashboard a.block:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.15);
+  border-color: #93c5fd;
+}
+
+.teacher-dashboard a.block .font-medium {
+  color: #111827;
+  font-weight: 600;
+}
+
+.teacher-dashboard a.block .text-sm {
+  color: #6b7280;
+}
+
+/* Empty state */
+.teacher-dashboard p.text-gray-500 {
+  text-align: center;
+  font-style: italic;
+  padding: 2rem 1rem;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px dashed #e2e8f0;
+}
+
+/* ---- Mobile responsiveness ---- */
+@media (max-width: 640px) {
+  .teacher-dashboard {
+    padding: 1rem !important;
+  }
+
+  .teacher-dashboard h1 {
+    font-size: 1.3rem;
+  }
+
+  /* Stack the create-class form vertically on small screens */
+  .teacher-dashboard form {
+    flex-direction: column;
+  }
+
+  .teacher-dashboard form input,
+  .teacher-dashboard form button {
+    width: 100%;
+  }
+
+  /* Keep header row from cramping on narrow screens */
+  .teacher-dashboard .flex.justify-between {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .teacher-dashboard h1 {
+    font-size: 1.15rem;
+  }
+}
