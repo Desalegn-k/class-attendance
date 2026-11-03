@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import api from "../lib/api";
 import Header from "../components/Header";
 
 const blank = { name: "", code: "", departmentId: "", academicYearId: "", semesterId: "", teacherId: "", assignedClass: "" };
 
 export default function AcademicAdmin() {
+  const [searchParams] = useSearchParams();
+  const tab = searchParams.get("tab") === "all-courses" ? "all-courses" : "create-course";
   const [options, setOptions] = useState({ departments: [], academicYears: [], semesters: [] });
   const [teachers, setTeachers] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -61,8 +64,12 @@ export default function AcademicAdmin() {
 
   return (
     <div className="max-w-6xl mx-auto page-body">
-      <Header title="Course Management" subtitle="Register courses and assign teachers" />
-      <form onSubmit={submit} className="bg-white border rounded-xl p-5 mb-6 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+      <Header
+        title={tab === "create-course" ? "Create Course" : "All Courses"}
+        subtitle={tab === "create-course" ? "Register a course and assign a teacher" : `${courses.length} course${courses.length === 1 ? "" : "s"}`}
+      />
+      {tab === "create-course" && (
+        <form onSubmit={submit} className="bg-white border rounded-xl p-5 mb-6 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
         <input className="border rounded-lg px-3 py-2" placeholder="Course name" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} required />
         <input className="border rounded-lg px-3 py-2" placeholder="Course code" value={form.code} onChange={(e) => setForm({...form, code: e.target.value})} required />
         <select className="border rounded-lg px-3 py-2" value={form.departmentId} onChange={(e) => setForm({...form, departmentId: e.target.value, teacherId: ""})} required><option value="">Department</option>{options.departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}</select>
@@ -72,12 +79,15 @@ export default function AcademicAdmin() {
         <input className="border rounded-lg px-3 py-2 md:col-span-2" placeholder="Assigned class (optional)" value={form.assignedClass} onChange={(e) => setForm({...form, assignedClass: e.target.value})} />
         <button className="bg-blue-600 text-white rounded-lg px-4 py-2">{editingId ? "Update course" : "Register course"}</button>
       </form>
+      )}
       {message && <p className="text-green-700 mb-4">{message}</p>}
       {error && <p className="text-red-600 mb-4">{error}</p>}
-      <div className="overflow-x-auto bg-white border rounded-xl">
-        <table className="w-full text-left"><thead className="bg-gray-50"><tr><th className="p-3">Course</th><th className="p-3">Department</th><th className="p-3">Academic</th><th className="p-3">Teacher</th><th className="p-3">Actions</th></tr></thead><tbody>{courses.map((course) => <tr key={course.id} className="border-t"><td className="p-3"><div className="font-medium">{course.name}</div><div className="text-sm text-gray-500">{course.code}</div></td><td className="p-3">{course.department?.name}</td><td className="p-3">{course.academicYear?.name || "—"} · {course.semester?.name || "—"}</td><td className="p-3">{course.assignments?.map((a) => a.teacher.name).join(", ") || "—"}</td><td className="p-3 whitespace-nowrap"><button className="text-blue-600 mr-3" onClick={() => edit(course)}>Edit</button><button className="text-red-600" onClick={() => remove(course.id)}>Remove</button></td></tr>)}</tbody></table>
+      {tab === "all-courses" && (
+      <div className="academic-table-wrap">
+        <table className="academic-table"><thead><tr><th>Course</th><th>Department</th><th>Academic</th><th>Teacher</th><th>Actions</th></tr></thead><tbody>{courses.map((course) => <tr key={course.id}><td><div className="font-medium">{course.name}</div><div className="academic-table__subtext">{course.code}</div></td><td>{course.department?.name}</td><td>{course.academicYear?.name || "—"} · {course.semester?.name || "—"}</td><td>{course.assignments?.map((a) => a.teacher.name).join(", ") || "—"}</td><td className="academic-table__actions"><button className="text-blue-600 mr-3" onClick={() => edit(course)}>Edit</button><button className="text-red-600" onClick={() => remove(course.id)}>Remove</button></td></tr>)}</tbody></table>
         {courses.length === 0 && <p className="p-6 text-center text-gray-500">No courses registered.</p>}
       </div>
+      )}
     </div>
   );
 }

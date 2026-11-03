@@ -937,6 +937,50 @@ p {
 
 /* ====================== 11. TABLES =============================== */
 
+.academic-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.academic-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+  font-size: var(--text-sm);
+}
+
+.academic-table th,
+.academic-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.academic-table th {
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.academic-table__actions {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.academic-table__subtext {
+  margin-top: 0.15rem;
+  color: var(--color-text-subtle);
+  font-size: 0.78rem;
+}
+
 .table-wrap {
   width: 100%;
   overflow-x: auto;
@@ -1819,6 +1863,40 @@ p {
   .stat-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .academic-table-wrap {
+    overflow-x: hidden;
+  }
+
+  .academic-table {
+    table-layout: fixed;
+    font-size: 0.68rem;
+  }
+
+  .academic-table th,
+  .academic-table td {
+    padding: 0.4rem 0.25rem;
+    overflow-wrap: anywhere;
+  }
+
+  .academic-table th {
+    font-size: 0.58rem;
+  }
+
+  .academic-table__actions {
+    white-space: normal;
+  }
+
+  .academic-table__actions button {
+    display: block;
+    width: 100%;
+    margin: 0 0 0.25rem;
+    font-size: 0.62rem;
+  }
+
+  .academic-table__subtext {
+    font-size: 0.62rem;
+  }
 }
 
 /* Tablets / small laptops */
@@ -1832,11 +1910,37 @@ p {
 /* Desktop: reveal the horizontal navigation, hide the hamburger. */
 @media (min-width: 1024px) {
   .app-header__nav {
-    display: flex;
+    display: none;
   }
 
   .hamburger {
     display: none;
+  }
+
+  .sidebar__overlay {
+    display: none;
+  }
+
+  .sidebar {
+    top: var(--header-height);
+    z-index: 35;
+    width: 260px;
+    transform: translateX(0);
+    box-shadow: none;
+  }
+
+  .sidebar__header {
+    min-height: var(--header-height);
+  }
+
+  .sidebar__header .icon-btn {
+    display: none;
+  }
+
+  .app-main,
+  .app-footer {
+    width: calc(100% - 260px);
+    margin-left: 260px;
   }
 
   .app-brand__text small {

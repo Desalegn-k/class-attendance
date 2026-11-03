@@ -10,6 +10,8 @@ const PAGE_SIZE = 15;
 
 const SECTIONS = {
   users: "Users",
+  "create-user": "Create User",
+  "all-users": "All Users",
   classes: "Classes",
   sessions: "Sessions",
 };
@@ -71,7 +73,7 @@ export default function AdminDashboard() {
   const [sessions, setSessions] = useState([]);
   const [searchParams] = useSearchParams();
   const requested = searchParams.get("tab");
-  const tab = SECTIONS[requested] ? requested : "users"; // "users" | "classes" | "sessions"
+  const tab = SECTIONS[requested] ? requested : "all-users";
   const [usersPage, setUsersPage] = useState(1);
   const [classesPage, setClassesPage] = useState(1);
   const [sessionsPage, setSessionsPage] = useState(1);
@@ -226,6 +228,8 @@ export default function AdminDashboard() {
 
   const counts = {
     users: users.length,
+    "create-user": users.length,
+    "all-users": users.length,
     classes: classes.length,
     sessions: sessions.length,
   };
@@ -242,7 +246,7 @@ export default function AdminDashboard() {
         subtitle={`${counts[tab]} record${counts[tab] === 1 ? "" : "s"}`}
       />
 
-      {tab === "users" && (
+      {(tab === "users" || tab === "create-user") && (
         <div className="admin-create-panel">
           <h2 className="admin-section-title">Create User</h2>
 
@@ -481,7 +485,7 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {tab === "users" && (
+      {(tab === "all-users" || tab === "users") && (
         <div className="admin-table-wrap">
           <table className="admin-table">
             <thead>
@@ -523,14 +527,14 @@ export default function AdminDashboard() {
                 </tr>
               ))}
               {users.length === 0 && (
-                <tr><td colSpan={4} className="admin-empty">No users yet</td></tr>
+                <tr><td colSpan={6} className="admin-empty">No users yet</td></tr>
               )}
             </tbody>
           </table>
         </div>
       )}
 
-      {tab === "users" && (
+      {(tab === "all-users" || tab === "users") && (
         <TablePagination
           total={users.length}
           page={usersPage}

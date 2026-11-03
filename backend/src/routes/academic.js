@@ -2,6 +2,7 @@ const express = require("express");
 const { z } = require("zod");
 const prisma = require("../lib/prisma");
 const { requireAuth, requireRole } = require("../middleware/auth");
+const { ensureCourseClass } = require("../lib/courseClass");
 
 const router = express.Router();
 router.use(requireAuth);
@@ -57,16 +58,22 @@ router.get("/teacher/courses", requireRole("TEACHER"), asyncHandler(async (req, 
     },
     orderBy: { createdAt: "desc" },
   });
-  res.json(assignments.map((assignment) => ({
-    assignmentId: assignment.id,
-    assignedClass: assignment.assignedClass,
-    id: assignment.course.id,
-    name: assignment.course.name,
-    code: assignment.course.code,
-    department: assignment.course.department,
-    academicYear: assignment.course.academicYear,
-    semester: assignment.course.semester,
-  })));
+  const courses = [];
+  for (const assignment of assignments) {
+    const cls = await ensureCourseClass(assignment.course, assignment);
+    courses.push({
+      assignmentId: assignment.id,
+      classId: cls.id,
+      assignedClass: assignment.assignedClass,
+      id: assignment.course.id,
+      name: assignment.course.name,
+      code: assignment.course.code,
+      department: assignment.course.department,
+      academicYear: assignment.course.academicYear,
+      semester: assignment.course.semester,
+    });
+  }
+  res.json(courses);
 }));
 
 module.exports = router;

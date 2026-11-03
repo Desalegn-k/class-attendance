@@ -4,6 +4,7 @@ const prisma = require("../lib/prisma");
 const { requireAuth, requireRole } = require("../middleware/auth");
 const bcrypt = require("bcryptjs");
 const { generateTempPassword } = require("../lib/tokens");
+const { ensureCourseClass } = require("../lib/courseClass");
 const router = express.Router();
 router.use(requireAuth, requireRole("ADMIN"));
 
@@ -404,9 +405,10 @@ router.post(
             semesterId: data.semesterId,
           },
         });
-        await tx.courseAssignment.create({
+        const assignment = await tx.courseAssignment.create({
           data: { courseId: created.id, teacherId: data.teacherId, assignedClass: data.assignedClass || null },
         });
+        await ensureCourseClass(created, assignment, tx);
         return created;
       });
       res.status(201).json(course);
@@ -440,9 +442,10 @@ router.patch(
         },
       });
       await tx.courseAssignment.deleteMany({ where: { courseId: course.id } });
-      await tx.courseAssignment.create({
+      const assignment = await tx.courseAssignment.create({
         data: { courseId: course.id, teacherId: data.teacherId, assignedClass: data.assignedClass || null },
       });
+      await ensureCourseClass(course, assignment, tx);
       return course;
     });
     res.json(result);

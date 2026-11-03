@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import api from "../lib/api";
 import Header from "../components/Header";
 import "./Teacher.css";
@@ -22,14 +23,19 @@ export default function TeacherDashboard() {
       {loading && <p className="text-gray-500">Loading courses...</p>}
       <div className="grid gap-4 md:grid-cols-2">
         {classes.map((course) => (
-          <article key={course.assignmentId} className="bg-white border rounded-xl px-5 py-4 shadow-sm">
+          <Link
+            key={course.assignmentId}
+            to={`/teacher/classes/${course.classId}`}
+            className="block bg-white border rounded-xl px-5 py-4 shadow-sm"
+          >
             <div className="font-semibold text-lg">{course.name}</div>
             <div className="text-sm text-blue-700 font-medium">{course.code}</div>
             <div className="text-sm text-gray-500 mt-1">
               {course.department?.name} · {course.academicYear?.name || "Academic year not set"} · {course.semester?.name || "Semester not set"}
             </div>
             <div className="mt-2 text-sm">Assigned class: {course.assignedClass || "Not specified"}</div>
-          </article>
+            <div className="mt-3 text-sm font-semibold text-blue-600">Open course to start attendance</div>
+          </Link>
         ))}
         {!loading && classes.length === 0 && (
           <div className="md:col-span-2 rounded-xl border border-dashed p-8 text-center text-gray-500">

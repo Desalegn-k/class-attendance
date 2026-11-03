@@ -27,8 +27,7 @@ const ICONS = {
   menu: "M4 6h16M4 12h16M4 18h16",
   close: "M6 6l12 12M18 6L6 18",
   dashboard: "M4 13h6V4H4v9zm0 7h6v-5H4v5zm10 0h6V11h-6v9zm0-16v5h6V4h-6z",
-  // classes:
-  //   "M3 7l9-4 9 4-9 4-9-4zm0 5l9 4 9-4m-18 5l9 4 9-4",
+  classes: "M3 7l9-4 9 4-9 4-9-4zm0 5l9 4 9-4m-18 5l9 4 9-4",
   mark: "M9 12l2 2 4-4m5 2a9 9 0 11-18 0 9 9 0 0118 0z",
   reports:
     "M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h6l6 6v12a2 2 0 01-2 2z",
@@ -51,10 +50,13 @@ const NAV_BY_ROLE = {
     // { to: "/teacher", label: "Students", icon: ICONS.students },
   ],
   ADMIN: [
-    { to: "/admin?tab=users", label: "Users", icon: ICONS.students, tab: "users" },
+    { to: "/admin", label: "Dashboard", icon: ICONS.dashboard, tab: "users" },
+    { to: "/admin?tab=create-user", label: "Create User", icon: ICONS.profile, tab: "create-user" },
+    { to: "/admin?tab=all-users", label: "All Users", icon: ICONS.students, tab: "all-users" },
     { to: "/admin?tab=classes", label: "Classes", icon: ICONS.classes, tab: "classes" },
     { to: "/admin?tab=sessions", label: "Sessions", icon: ICONS.reports, tab: "sessions" },
-    { to: "/admin/academic", label: "Courses", icon: ICONS.reports },
+    { to: "/admin/academic?tab=create-course", label: "Create Course", icon: ICONS.reports, tab: "create-course" },
+    { to: "/admin/academic?tab=all-courses", label: "All Courses", icon: ICONS.classes, tab: "all-courses" },
   ],
   DEPARTMENT_HEAD: [
     { to: "/department", label: "Department", icon: ICONS.dashboard, end: true },
@@ -149,6 +151,9 @@ export default function MainHeader() {
   function isActive(item) {
     if (item.tab) {
       const current = new URLSearchParams(location.search).get("tab") || "users";
+      if (item.tab === "create-course" || item.tab === "all-courses") {
+        return location.pathname === "/admin/academic" && current === item.tab;
+      }
       return location.pathname === "/admin" && current === item.tab;
     }
     if (item.end) return location.pathname === item.to;
@@ -285,19 +290,9 @@ export default function MainHeader() {
         ref={sidebarRef}
         className={`sidebar${open ? " is-open" : ""}`}
         aria-label="Navigation"
-        aria-hidden={!open}
-        inert={open ? undefined : ""}
       >
         <div className="sidebar__header">
-          <span className="app-brand">
-            <span className="app-brand__mark" aria-hidden="true">
-              <Icon path={ICONS.classes} />
-            </span>
-            <span className="app-brand__text">
-              Class Attendance
-              <small>Menu</small>
-            </span>
-          </span>
+          <strong>Navigation</strong>
           <button
             type="button"
             className="icon-btn"
@@ -321,7 +316,6 @@ export default function MainHeader() {
               className={`sidebar__link${isActive(item) ? " is-active" : ""}`}
               aria-current={isActive(item) ? "page" : undefined}
               onClick={() => setOpen(false)}
-              tabIndex={open ? 0 : -1}
             >
               <span className="icon" aria-hidden="true">
                 <Icon path={item.icon} filled />
@@ -336,7 +330,6 @@ export default function MainHeader() {
               to={role === "DEPARTMENT_HEAD" ? "/department" : `/${role.toLowerCase()}`}
               className="sidebar__link"
               onClick={() => setOpen(false)}
-              tabIndex={open ? 0 : -1}
             >
               <span className="icon" aria-hidden="true">
                 <Icon path={ICONS.profile} filled />
@@ -344,7 +337,7 @@ export default function MainHeader() {
               Profile
             </NavLink>
           )}
-          <span className="sidebar__link" tabIndex={open ? 0 : -1}>
+          <span className="sidebar__link">
             <span className="icon" aria-hidden="true">
               <Icon path={ICONS.bell} filled />
             </span>

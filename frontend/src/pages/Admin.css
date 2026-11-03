@@ -53,6 +53,7 @@
   width: 100%;
   border-collapse: collapse;
   background: #fff;
+  table-layout: auto;
 }
 
 .admin-table th {
@@ -245,6 +246,12 @@
   margin-bottom: 0.75rem;
 }
 
+.admin-table th:last-child,
+.admin-table td:last-child {
+  min-width: 5.25rem;
+  white-space: nowrap;
+}
+
 .admin-import-submit {
   background: linear-gradient(90deg, #2563eb, #4f46e5);
   color: #fff;
@@ -293,10 +300,12 @@
 @media (max-width: 640px) {
   .admin-table-wrap {
     border-radius: 10px;
+    overflow-x: hidden;
   }
 
   .admin-table {
     table-layout: auto;
+    width: 100%;
   }
 
   .admin-table th {
@@ -310,6 +319,12 @@
     padding: 0.4rem 0.3rem;
     font-size: 0.68rem;
     line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  .admin-table th:last-child,
+  .admin-table td:last-child {
+    min-width: 0;
   }
 
   .admin-table td:first-child {
