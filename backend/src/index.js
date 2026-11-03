@@ -10,6 +10,7 @@ const classRoutes = require("./routes/classes");
 const sessionRoutes = require("./routes/sessions");
 const studentRoutes = require("./routes/students");
 const adminRoutes = require("./routes/admin");
+const academicRoutes = require("./routes/academic");
 const { schedule, cancel } = require("./lib/sessionPresence");
 const { closeSession } = require("./lib/closeSession");
 const { startSessionSweeper } = require("./lib/sessionSweep");
@@ -77,6 +78,7 @@ app.use("/api/classes", classRoutes);
 app.use("/api", sessionRoutes); // sessions.js defines its own /classes/:id/sessions and /sessions/* paths
 app.use("/api/students", studentRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/academic", academicRoutes);
 
 // Socket.IO: clients join a room per session to receive live check-in updates,
 // and we track presence to auto-close a session if the teacher's live view

@@ -1,70 +1,40 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import api, { logout } from "../lib/api";
+import api from "../lib/api";
 import Header from "../components/Header";
 import "./Teacher.css";
 
 export default function TeacherDashboard() {
   const [classes, setClasses] = useState([]);
-  const [name, setName] = useState("");
-  const [subject, setSubject] = useState("");
-
-  async function load() {
-    const { data } = await api.get("/classes");
-    setClasses(data);
-  }
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    load();
+    api.get("/academic/teacher/courses")
+      .then(({ data }) => setClasses(data))
+      .catch((err) => setError(err.response?.data?.error || "Could not load assigned courses"))
+      .finally(() => setLoading(false));
   }, []);
 
-  async function createClass(e) {
-    e.preventDefault();
-    await api.post("/classes", { name, subject });
-    setName("");
-    setSubject("");
-    load();
-  }
-
   return (
-    <div className="max-w-2xl mx-auto page-body teacher-dashboard">
-      <Header title="Your Classes" />
-
-      <form onSubmit={createClass} className="flex gap-2 mb-6">
-        <input
-          className="flex-1 border rounded-lg px-3 py-2"
-          placeholder="Class name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <input
-          className="flex-1 border rounded-lg px-3 py-2"
-          placeholder="Subject (optional)"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-        />
-        <button className="bg-blue-600 text-white px-4 rounded-lg">
-          Create
-        </button>
-      </form>
-
-      <div className="space-y-2">
-        {classes.map((c) => (
-          <Link
-            key={c.id}
-            to={`/teacher/classes/${c.id}`}
-            className="block bg-white border rounded-lg px-4 py-3 hover:border-blue-400"
-          >
-            <div className="font-medium">{c.name}</div>
-            <div className="text-sm text-gray-500">
-              {c.subject || "No subject"} · {c._count?.enrollments ?? 0}{" "}
-              students
+    <div className="max-w-5xl mx-auto page-body teacher-dashboard">
+      <Header title="My Assigned Courses" subtitle="Courses assigned by your administrator" />
+      {error && <p className="text-red-600 mb-4">{error}</p>}
+      {loading && <p className="text-gray-500">Loading courses...</p>}
+      <div className="grid gap-4 md:grid-cols-2">
+        {classes.map((course) => (
+          <article key={course.assignmentId} className="bg-white border rounded-xl px-5 py-4 shadow-sm">
+            <div className="font-semibold text-lg">{course.name}</div>
+            <div className="text-sm text-blue-700 font-medium">{course.code}</div>
+            <div className="text-sm text-gray-500 mt-1">
+              {course.department?.name} · {course.academicYear?.name || "Academic year not set"} · {course.semester?.name || "Semester not set"}
             </div>
-          </Link>
+            <div className="mt-2 text-sm">Assigned class: {course.assignedClass || "Not specified"}</div>
+          </article>
         ))}
-        {classes.length === 0 && (
-          <p className="text-gray-500">No classes yet — create one above.</p>
+        {!loading && classes.length === 0 && (
+          <div className="md:col-span-2 rounded-xl border border-dashed p-8 text-center text-gray-500">
+            No courses have been assigned to you.
+          </div>
         )}
       </div>
     </div>

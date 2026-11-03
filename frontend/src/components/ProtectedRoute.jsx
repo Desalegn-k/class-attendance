@@ -11,7 +11,7 @@ export default function ProtectedRoute({ role, children }) {
     return <Navigate to="/change-password" replace />;
   }
 
-  if (role && user.role !== role) return <Navigate to="/" replace />;
+  if (role && !(Array.isArray(role) ? role.includes(user.role) : user.role === role)) return <Navigate to="/" replace />;
 
   return children;
 }

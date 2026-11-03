@@ -6,13 +6,13 @@ const { requireAuth, requireRole } = require("../middleware/auth");
 const router = express.Router();
 router.use(requireAuth);
 
-// Create a class (teacher only)
+// Legacy attendance classes are administrator-managed; teachers cannot register classes.
 const createClassSchema = z.object({
   name: z.string().min(1),
   subject: z.string().optional(),
 });
 
-router.post("/", requireRole("TEACHER", "ADMIN"), async (req, res) => {
+router.post("/", requireRole("ADMIN"), async (req, res) => {
   const parsed = createClassSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
 

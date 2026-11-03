@@ -12,14 +12,84 @@ model User {
   name         String
   email        String   @unique
   passwordHash String
-  role         String   // "ADMIN" | "TEACHER" | "STUDENT"
+  role         String   // "ADMIN" | "DEPARTMENT_HEAD" | "TEACHER" | "STUDENT"
   createdAt    DateTime @default(now())
-  isActive          Boolean @default(true)   // ← add
-  mustChangePassword Boolean @default(false) // ← add
+  isActive          Boolean @default(true)
+  mustChangePassword Boolean @default(false)
+
+  collegeId     String?
+  college       College?     @relation("UserCollege", fields: [collegeId], references: [id])
+  departmentId  String?
+  department    Department?  @relation("UserDepartment", fields: [departmentId], references: [id])
+  academicYearId String?
+  academicYear   AcademicYear? @relation(fields: [academicYearId], references: [id])
+  semesterId    String?
+  semester      Semester?    @relation(fields: [semesterId], references: [id])
 
   classesTaught     Class[]            @relation("TeacherClasses")
   enrollments       Enrollment[]
   attendanceRecords AttendanceRecord[]
+  courseAssignments CourseAssignment[]
+}
+
+model College {
+  id         String       @id @default(cuid())
+  name       String       @unique
+  departments Department[]
+  users      User[]       @relation("UserCollege")
+}
+
+model Department {
+  id        String   @id @default(cuid())
+  name      String
+  collegeId String
+  college   College  @relation(fields: [collegeId], references: [id], onDelete: Restrict)
+  users     User[]   @relation("UserDepartment")
+  courses   Course[]
+
+  @@unique([collegeId, name])
+}
+
+model AcademicYear {
+  id       String   @id @default(cuid())
+  name     String   @unique
+  sortOrder Int     @default(0)
+  users    User[]
+  courses  Course[]
+}
+
+model Semester {
+  id       String   @id @default(cuid())
+  name     String   @unique
+  sortOrder Int     @default(0)
+  users    User[]
+  courses  Course[]
+}
+
+model Course {
+  id             String   @id @default(cuid())
+  name           String   @map("title")
+  code           String   @unique
+  departmentId   String
+  department     Department @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  academicYearId String?
+  academicYear   AcademicYear? @relation(fields: [academicYearId], references: [id], onDelete: Restrict)
+  semesterId     String?
+  semester       Semester? @relation(fields: [semesterId], references: [id], onDelete: Restrict)
+  createdAt      DateTime @default(now())
+  assignments    CourseAssignment[]
+}
+
+model CourseAssignment {
+  id            String   @id @default(cuid())
+  courseId      String
+  teacherId     String
+  assignedClass String?
+  createdAt     DateTime @default(now())
+  course        Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  teacher       User   @relation(fields: [teacherId], references: [id], onDelete: Restrict)
+
+  @@unique([courseId, teacherId])
 }
 
 model Class {

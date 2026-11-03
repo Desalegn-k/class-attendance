@@ -59,7 +59,7 @@ function normalizeRow(row) {
   return {
     name: get("name", "full name", "student name"),
     email: get("email", "email address"),
-    role: ["ADMIN", "TEACHER", "STUDENT"].includes(role) ? role : "STUDENT",
+    role: ["ADMIN", "DEPARTMENT_HEAD", "TEACHER", "STUDENT"].includes(role) ? role : "STUDENT",
     temporaryPassword:
       get("password", "temporary password", "temp password") || undefined,
   };
@@ -84,6 +84,16 @@ export default function AdminDashboard() {
     email: "",
     role: "STUDENT",
     temporaryPassword: "",
+    collegeId: "",
+    departmentId: "",
+    academicYearId: "",
+    semesterId: "",
+  });
+  const [academicOptions, setAcademicOptions] = useState({
+    colleges: [],
+    departments: [],
+    academicYears: [],
+    semesters: [],
   });
   const [manualError, setManualError] = useState("");
   const [manualSuccess, setManualSuccess] = useState("");
@@ -94,14 +104,16 @@ export default function AdminDashboard() {
   const fileInputRef = useRef(null);
 
   async function load() {
-    const [u, c, s] = await Promise.all([
+    const [u, c, s, options] = await Promise.all([
       api.get("/admin/users"),
       api.get("/admin/classes"),
       api.get("/admin/sessions"),
+      api.get("/academic/options"),
     ]);
     setUsers(u.data);
     setClasses(c.data);
     setSessions(s.data);
+    setAcademicOptions(options.data);
   }
 
   useEffect(() => {
@@ -136,6 +148,10 @@ export default function AdminDashboard() {
         email: "",
         role: "STUDENT",
         temporaryPassword: "",
+        collegeId: "",
+        departmentId: "",
+        academicYearId: "",
+        semesterId: "",
       });
       load();
     } catch (err) {
@@ -272,8 +288,79 @@ export default function AdminDashboard() {
               >
                 <option value="STUDENT">STUDENT</option>
                 <option value="TEACHER">TEACHER</option>
+                <option value="DEPARTMENT_HEAD">DEPARTMENT_HEAD</option>
                 <option value="ADMIN">ADMIN</option>
               </select>
+              {manualForm.role !== "ADMIN" && (
+                <>
+                  <select
+                    value={manualForm.collegeId}
+                    onChange={(e) =>
+                      setManualForm({
+                        ...manualForm,
+                        collegeId: e.target.value,
+                        departmentId: "",
+                      })
+                    }
+                    required
+                  >
+                    <option value="">Select college</option>
+                    {academicOptions.colleges.map((college) => (
+                      <option key={college.id} value={college.id}>
+                        {college.name}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={manualForm.departmentId}
+                    onChange={(e) =>
+                      setManualForm({ ...manualForm, departmentId: e.target.value })
+                    }
+                    required
+                  >
+                    <option value="">Select Department</option>
+                    {academicOptions.departments
+                      .filter((department) => department.collegeId === manualForm.collegeId)
+                      .map((department) => (
+                        <option key={department.id} value={department.id}>
+                          {department.name}
+                        </option>
+                      ))}
+                  </select>
+                </>
+              )}
+              {manualForm.role === "STUDENT" && (
+                <>
+                  <select
+                    value={manualForm.academicYearId}
+                    onChange={(e) =>
+                      setManualForm({ ...manualForm, academicYearId: e.target.value })
+                    }
+                    required
+                  >
+                    <option value="">Year</option>
+                    {academicOptions.academicYears.map((year) => (
+                      <option key={year.id} value={year.id}>
+                        {year.name}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={manualForm.semesterId}
+                    onChange={(e) =>
+                      setManualForm({ ...manualForm, semesterId: e.target.value })
+                    }
+                    required
+                  >
+                    <option value="">Semester</option>
+                    {academicOptions.semesters.map((semester) => (
+                      <option key={semester.id} value={semester.id}>
+                        {semester.name}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              )}
               <input
                 placeholder="Temporary password"
                 value={manualForm.temporaryPassword}
@@ -416,6 +503,7 @@ export default function AdminDashboard() {
                     <select value={u.role} onChange={(e) => changeRole(u.id, e.target.value)}>
                       <option value="STUDENT">STUDENT</option>
                       <option value="TEACHER">TEACHER</option>
+                      <option value="DEPARTMENT_HEAD">DEPARTMENT_HEAD</option>
                       <option value="ADMIN">ADMIN</option>
                     </select>
                   </td>

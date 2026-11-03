@@ -19,6 +19,8 @@ import ShearedLyout from "./components/ShearedLyout";
 import AdminDashboard from "./pages/AdminDashboard";
 import ChangePassword from "./pages/ChangePassword";
 import Home from "./pages/Home"
+import DepartmentDashboard from "./pages/DepartmentDashboard";
+import AcademicAdmin from "./pages/AcademicAdmin";
 
 export default function App() {
   const user = getCurrentUser();
@@ -34,7 +36,7 @@ export default function App() {
           element={
             user ? (
               <Navigate
-                to={user.role === "TEACHER" ? "/teacher" : "/student"}
+                to={                user.role === "TEACHER" ? "/teacher" : user.role === "DEPARTMENT_HEAD" ? "/department" : user.role === "ADMIN" ? "/admin" : "/student"}
                 replace
               />
             ) : (
@@ -58,6 +60,18 @@ export default function App() {
             <ProtectedRoute role="ADMIN">
               <AdminDashboard />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/academic"
+          element={
+            <ProtectedRoute role="ADMIN"><AcademicAdmin /></ProtectedRoute>
+          }
+        />
+        <Route
+          path="/department"
+          element={
+            <ProtectedRoute role="DEPARTMENT_HEAD"><DepartmentDashboard /></ProtectedRoute>
           }
         />
         <Route

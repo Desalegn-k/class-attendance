@@ -1,5 +1,4 @@
 import axios from "axios";
-import { Navigate } from "react-router-dom";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:4000/api",
@@ -26,4 +25,5 @@ export function logout() {
   localStorage.removeItem("user");
   window.location.href = "/login";
 }
+
 export default api;

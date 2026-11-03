@@ -25,6 +25,10 @@ router.get(
         role: true,
         isActive: true,
         createdAt: true,
+        collegeId: true,
+        departmentId: true,
+        academicYearId: true,
+        semesterId: true,
       },
       orderBy: { createdAt: "desc" },
     });
@@ -33,7 +37,7 @@ router.get(
 );
 
 // Change a user's role
-const roleSchema = z.object({ role: z.enum(["ADMIN", "TEACHER", "STUDENT"]) });
+const roleSchema = z.object({ role: z.enum(["ADMIN", "DEPARTMENT_HEAD", "TEACHER", "STUDENT"]) });
 
 router.patch(
   "/users/:id/role",
@@ -161,8 +165,12 @@ router.get(
 const createUserSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
-  role: z.enum(["ADMIN", "TEACHER", "STUDENT"]),
+  role: z.enum(["ADMIN", "DEPARTMENT_HEAD", "TEACHER", "STUDENT"]),
   temporaryPassword: z.string().min(8),
+  collegeId: z.string().optional(),
+  departmentId: z.string().optional(),
+  academicYearId: z.string().optional(),
+  semesterId: z.string().optional(),
 });
 
 router.post(
@@ -170,7 +178,33 @@ router.post(
   asyncHandler(async (req, res) => {
     const parsed = createUserSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
-    const { name, email, role, temporaryPassword } = parsed.data;
+    const { name, email, role, temporaryPassword, collegeId, departmentId, academicYearId, semesterId } = parsed.data;
+
+    const academicRoles = ["STUDENT", "TEACHER", "DEPARTMENT_HEAD"];
+    if (academicRoles.includes(role)) {
+      if (!collegeId || !departmentId) {
+        return res.status(400).json({ error: "College and department are required for this role" });
+      }
+      const department = await prisma.department.findUnique({
+        where: { id: departmentId },
+        select: { id: true, collegeId: true },
+      });
+      if (!department || department.collegeId !== collegeId) {
+        return res.status(400).json({ error: "Department must belong to the selected college" });
+      }
+    }
+    if (role === "STUDENT") {
+      if (!academicYearId || !semesterId) {
+        return res.status(400).json({ error: "Academic year and semester are required for students" });
+      }
+      const [academicYear, semester] = await Promise.all([
+        prisma.academicYear.findUnique({ where: { id: academicYearId }, select: { id: true } }),
+        prisma.semester.findUnique({ where: { id: semesterId }, select: { id: true } }),
+      ]);
+      if (!academicYear || !semester) {
+        return res.status(400).json({ error: "Invalid academic year or semester" });
+      }
+    }
 
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
@@ -186,6 +220,10 @@ router.post(
         role,
         isActive: true,
         mustChangePassword: true,
+        collegeId: collegeId || null,
+        departmentId: departmentId || null,
+        academicYearId: academicYearId || null,
+        semesterId: semesterId || null,
       },
       select: { id: true, name: true, email: true, role: true, isActive: true },
     });
@@ -226,7 +264,7 @@ const bulkUserSchema = z.object({
       z.object({
         name: z.string().min(1),
         email: z.string().email(),
-        role: z.enum(["ADMIN", "TEACHER", "STUDENT"]),
+        role: z.enum(["ADMIN", "DEPARTMENT_HEAD", "TEACHER", "STUDENT"]),
         temporaryPassword: z.string().min(8).optional(),
       })
     )
@@ -240,7 +278,7 @@ const bulkUserSchema = z.object({
 const bulkRowSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email"),
-  role: z.enum(["ADMIN", "TEACHER", "STUDENT"]),
+  role: z.enum(["ADMIN", "DEPARTMENT_HEAD", "TEACHER", "STUDENT"]),
   temporaryPassword: z
     .string()
     .min(8, "Password must be at least 8 characters")
@@ -307,6 +345,116 @@ router.post(
 
     res.status(201).json({ results });
   })
+);
+
+const courseSchema = z.object({
+  name: z.string().min(1),
+  code: z.string().min(1),
+  departmentId: z.string().min(1),
+  academicYearId: z.string().min(1),
+  semesterId: z.string().min(1),
+  teacherId: z.string().min(1),
+  assignedClass: z.string().optional().nullable(),
+});
+
+router.get(
+  "/courses",
+  asyncHandler(async (req, res) => {
+    const courses = await prisma.course.findMany({
+      include: {
+        department: { include: { college: true } },
+        academicYear: true,
+        semester: true,
+        assignments: { include: { teacher: { select: { id: true, name: true, email: true } } } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    res.json(courses);
+  }),
+);
+
+router.post(
+  "/courses",
+  asyncHandler(async (req, res) => {
+    const parsed = courseSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
+    const data = parsed.data;
+
+    const [department, teacher, academicYear, semester] = await Promise.all([
+      prisma.department.findUnique({ where: { id: data.departmentId } }),
+      prisma.user.findUnique({ where: { id: data.teacherId } }),
+      prisma.academicYear.findUnique({ where: { id: data.academicYearId } }),
+      prisma.semester.findUnique({ where: { id: data.semesterId } }),
+    ]);
+    if (!department || !academicYear || !semester) {
+      return res.status(400).json({ error: "Invalid department, academic year, or semester" });
+    }
+    if (!teacher || teacher.role !== "TEACHER" || teacher.departmentId !== department.id) {
+      return res.status(400).json({ error: "Teacher must belong to the course department" });
+    }
+
+    try {
+      const course = await prisma.$transaction(async (tx) => {
+        const created = await tx.course.create({
+          data: {
+            name: data.name,
+            code: data.code.toUpperCase(),
+            departmentId: data.departmentId,
+            academicYearId: data.academicYearId,
+            semesterId: data.semesterId,
+          },
+        });
+        await tx.courseAssignment.create({
+          data: { courseId: created.id, teacherId: data.teacherId, assignedClass: data.assignedClass || null },
+        });
+        return created;
+      });
+      res.status(201).json(course);
+    } catch (err) {
+      if (err.code === "P2002") return res.status(409).json({ error: "Course code already exists or assignment is duplicated" });
+      throw err;
+    }
+  }),
+);
+
+router.patch(
+  "/courses/:id",
+  asyncHandler(async (req, res) => {
+    const parsed = courseSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
+    const data = parsed.data;
+    const teacher = await prisma.user.findUnique({ where: { id: data.teacherId } });
+    if (!teacher || teacher.role !== "TEACHER" || teacher.departmentId !== data.departmentId) {
+      return res.status(400).json({ error: "Teacher must belong to the course department" });
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+      const course = await tx.course.update({
+        where: { id: req.params.id },
+        data: {
+          name: data.name,
+          code: data.code.toUpperCase(),
+          departmentId: data.departmentId,
+          academicYearId: data.academicYearId,
+          semesterId: data.semesterId,
+        },
+      });
+      await tx.courseAssignment.deleteMany({ where: { courseId: course.id } });
+      await tx.courseAssignment.create({
+        data: { courseId: course.id, teacherId: data.teacherId, assignedClass: data.assignedClass || null },
+      });
+      return course;
+    });
+    res.json(result);
+  }),
+);
+
+router.delete(
+  "/courses/:id",
+  asyncHandler(async (req, res) => {
+    await prisma.course.delete({ where: { id: req.params.id } });
+    res.json({ ok: true });
+  }),
 );
 
 module.exports = router;

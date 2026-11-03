@@ -54,6 +54,10 @@ const NAV_BY_ROLE = {
     { to: "/admin?tab=users", label: "Users", icon: ICONS.students, tab: "users" },
     { to: "/admin?tab=classes", label: "Classes", icon: ICONS.classes, tab: "classes" },
     { to: "/admin?tab=sessions", label: "Sessions", icon: ICONS.reports, tab: "sessions" },
+    { to: "/admin/academic", label: "Courses", icon: ICONS.reports },
+  ],
+  DEPARTMENT_HEAD: [
+    { to: "/department", label: "Department", icon: ICONS.dashboard, end: true },
   ],
   STUDENT: [
     { to: "/student", label: "Dashboard", icon: ICONS.dashboard, end: true },
@@ -169,7 +173,9 @@ export default function MainHeader() {
               user
                 ? role === "ADMIN"
                   ? "/admin"
-                  : `/${role.toLowerCase()}`
+                  : role === "DEPARTMENT_HEAD"
+                    ? "/department"
+                    : `/${role.toLowerCase()}`
                 : "/login"
             }
             className="app-brand"
@@ -327,7 +333,7 @@ export default function MainHeader() {
           <p className="sidebar__section">Account</p>
           {user && (
             <NavLink
-              to={`/${role.toLowerCase()}`}
+              to={role === "DEPARTMENT_HEAD" ? "/department" : `/${role.toLowerCase()}`}
               className="sidebar__link"
               onClick={() => setOpen(false)}
               tabIndex={open ? 0 : -1}

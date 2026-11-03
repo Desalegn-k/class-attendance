@@ -25,7 +25,9 @@ export default function Login() {
           ? "/teacher"
           : data.user.role === "ADMIN"
             ? "/admin"
-            : "/student";
+            : data.user.role === "DEPARTMENT_HEAD"
+              ? "/department"
+              : "/student";
       navigate(dest);
       // navigate("/")
       // write a simple resopnse on the browser to indicate that the user has logged in successfully
